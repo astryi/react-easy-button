@@ -49,7 +49,7 @@ const Button: React.FC = () => {
 | label            | `string`   | `undefined` | `Required`. If not provided, will throw error.                                                                                                                                                                |
 | title            | `string`   | `undefined` | `Optional`. Title attribute of html button tag.                                                                                                                                                               |
 | theme            | `string`   | `primary`   | `Optional`. Available themes (custom, error, success, warn, purple, pink, primary)                                                                                                                           |
-| debounce         | `number`   | `0`         | `Optional`. Delaytime in ms (eg. 100 = 100ms))                                                                                                                                                                |
+| debounceTimeout  | `number`   | `0`         | `Optional`. Delaytime in ms (eg. 100 = 100ms))                                                                                                                                                                |
 | disabled         | `boolean`  | `false`     | `Optional`.                                                                                                                                                                                                  |
 | style            | `object`   | `undefined` | `Optional`. If provided & `theme === "custom"` then only provided style will be applyed                                                                                                                    |
 | extendStyle      | `object`   | `undefined` | `Optional`. If provided, will change only provided styles. eg. `theme="purple"` & extendStyle={{border: "2px solid purple"}} it will keep theme styles with provided style `border: "2px solid purple"`"" |
@@ -60,8 +60,6 @@ const Button: React.FC = () => {
 | onHover          | `function` | `undefined` |                                                                                                                                                                                                                 |
 | onFocus          | `function` | `undefined` |                                                                                                                                                                                                                 |
 |                  |              |               |                                                                                                                                                                                                                 |
-
-
 
 ## License
 
