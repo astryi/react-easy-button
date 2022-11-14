@@ -1,12 +1,13 @@
-import React, { CSSProperties, LegacyRef, useEffect, useState } from "react";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 export interface ButtonProps {
   label: string;
   title?: string;
   theme?: ButtonTheme;
-  debounce?: boolean;
+  debounceTimeout?: number;
   disabled?: boolean;
-  ref?: LegacyRef<HTMLButtonElement> | undefined;
+  easyRef?: any;
   style?: CSSProperties;
   extendStyle?: CSSProperties;
   hoverStyle?: CSSProperties;
@@ -58,53 +59,29 @@ const buttonStyles = {
     },
   },
   purple: {
-    styles: {
+    normal: {
       ...defaultStyles,
       color: "#8D00FF",
       backgroundColor: "#EED9FF",
     },
+    hover: defaultStyles,
   },
   primary: {
-    styles: {
+    normal: {
       ...defaultStyles,
       color: "#006AFE",
       backgroundColor: "#D9E9FF",
     },
+    hover: defaultStyles,
   },
 };
 
-const getButtonStyles = (
-  theme: ButtonTheme | undefined = "custom",
-  styles: React.CSSProperties | undefined,
-  extendStyles: React.CSSProperties | undefined,
-  hoverStyles: React.CSSProperties | undefined,
-  hoverExtendStyles: React.CSSProperties | undefined,
-  isHovered: boolean,
-): React.CSSProperties | undefined => {
-  if (theme === "custom") {
-    return !isHovered ? styles : hoverStyles;
-  }
-
-  if (extendStyles) {
-    /* @ts-ignore */
-    return !isHovered
-      ? {/* @ts-ignore */
-          ...buttonStyles[theme].normal,
-          ...extendStyles,
-        } /* @ts-ignore */
-      : { ...buttonStyles[theme].hover, ...hoverExtendStyles };
-  }
-
-  /* @ts-ignore */
-  return !isHovered ? buttonStyles[theme].normal : buttonStyles[theme].hover;
-};
-
 export const EasyButton: React.FC<ButtonProps> = ({
-  ref,
+  easyRef,
   theme,
   title,
   label,
-  debounce = false,
+  debounceTimeout = 0,
   disabled = false,
   style,
   extendStyle,
@@ -114,16 +91,63 @@ export const EasyButton: React.FC<ButtonProps> = ({
   onFocus,
   onHover,
 }) => {
+  const [debounceDelay, setDebounceDelay] = useState(debounceTimeout);
   const [isHover, setIsHover] = useState<boolean>(false);
 
+  /**
+   * Handle hover state
+   */
   useEffect(() => {
     if (isHover) {
       onHover && onHover();
     }
   }, [isHover]);
 
+  /**
+   * handle debounce
+   */
+  useEffect(() => {
+    setDebounceDelay(debounceTimeout);
+  }, [debounceTimeout]);
+
+  const debounce = useDebouncedCallback((fn) => {
+    fn();
+  }, debounceDelay);
+
+  /**
+   * Handle button styles
+   * Return all styles based on condition
+   */
+  const getButtonStyles = (
+    theme: ButtonTheme | undefined = "custom",
+    styles: React.CSSProperties | undefined,
+    extendStyles: React.CSSProperties | undefined,
+    hoverStyles: React.CSSProperties | undefined,
+    hoverExtendStyles: React.CSSProperties | undefined,
+    isHovered: boolean,
+  ): React.CSSProperties | undefined => {
+    if (theme === "custom") {
+      return !isHovered ? styles : hoverStyles;
+    }
+
+    if (extendStyles) {
+      /* @ts-ignore */
+      return !isHovered
+        ? {
+            /* @ts-ignore */
+            ...buttonStyles[theme].normal,
+            ...extendStyles,
+          } /* @ts-ignore */
+        : { ...buttonStyles[theme].hover, ...hoverExtendStyles };
+    }
+
+    /* @ts-ignore */
+    return !isHovered ? buttonStyles[theme].normal : buttonStyles[theme].hover;
+  };
+
   return (
     <button
+      ref={easyRef}
       title={title && title}
       style={getButtonStyles(
         theme,
@@ -133,11 +157,18 @@ export const EasyButton: React.FC<ButtonProps> = ({
         hoverExtendStyle,
         isHover,
       )}
-      onClick={onClick}
-      onFocus={onFocus}
+      onClick={() =>
+        debounce(function () {
+          onClick ? onClick() : () => {};
+        })
+      }
+      onFocus={() =>
+        debounce(function () {
+          onFocus ? onFocus() : () => {};
+        })
+      }
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
-      ref={ref}
       disabled={disabled}
     >
       {label && label}
