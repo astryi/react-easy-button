@@ -111,7 +111,7 @@ const buttonStyles = {
     normal: {
       ...defaultStyles,
       color: "#FF0000",
-      backgroundColor: "#A48000",
+      backgroundColor: "FFD9D9",
       opacity: 1,
     },
     hover: {
