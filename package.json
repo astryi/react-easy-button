@@ -1,6 +1,6 @@
 {
   "name": "react-easy-button",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Implement easily customize out of the box. Work with a vast number of pre-maid react button themes",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
