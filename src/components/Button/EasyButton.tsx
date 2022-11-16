@@ -1,6 +1,6 @@
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-
+import { buttonStyles, defaultStyles } from "./themes";
 export interface ButtonProps {
   label: string;
   title?: string;
@@ -11,7 +11,7 @@ export interface ButtonProps {
   style?: CSSProperties;
   extendStyle?: CSSProperties;
   hoverStyle?: CSSProperties;
-  hoverExtendStyle?: CSSProperties;
+  extendHoverStyle?: CSSProperties;
   onClick?: () => void;
   onHover?: () => void;
   onFocus?: () => void;
@@ -44,99 +44,6 @@ export type ButtonTheme =
   | "secondary_warn_outline"
   | "secondary_error_outline";
 
-/**
- * Button default styles
- */
-const defaultStyles: React.CSSProperties = {
-  paddingTop: 10,
-  paddingBottom: 10,
-  paddingLeft: 20,
-  paddingRight: 20,
-  fontSize: 15,
-  fontWeight: "500",
-  color: "#000",
-  backgroundColor: "#fcfcfc",
-  border: 0,
-  borderRadius: 5,
-  boxShadow: "0px 2px 4px rgba(193, 193, 193, 0.25)",
-};
-
-/**
- * Button styles obj contains normal, hover & other values
- */
-const buttonStyles = {
-  easy_success: {
-    normal: {
-      ...defaultStyles,
-      color: "#04A100",
-      backgroundColor: "#DAFFD9",
-      opacity: 1,
-    },
-    hover: {
-      ...defaultStyles,
-      color: "#04A100",
-      backgroundColor: "#DAFFD9",
-      opacity: 0.7,
-    },
-  },
-  easy_info: {
-    normal: {
-      ...defaultStyles,
-      color: "#006AFE",
-      backgroundColor: "#D9E9FF",
-      opacity: 1,
-    },
-    hover: {
-      ...defaultStyles,
-      color: "#006AFE",
-      backgroundColor: "#D9E9FF",
-      opacity: 0.7,
-    },
-  },
-  easy_warn: {
-    normal: {
-      ...defaultStyles,
-      color: "#A48000",
-      backgroundColor: "#FFFBD9",
-      opacity: 1,
-    },
-    hover: {
-      ...defaultStyles,
-      color: "#A48000",
-      backgroundColor: "#FFFBD9",
-      opacity: 0.7,
-    },
-  },
-  easy_error: {
-    normal: {
-      ...defaultStyles,
-      color: "#FF0000",
-      backgroundColor: "FFD9D9",
-      opacity: 1,
-    },
-    hover: {
-      ...defaultStyles,
-      color: "#FF0000",
-      backgroundColor: "#A48000",
-      opacity: 0.7,
-    },
-  },
-  easy_purple: {
-    normal: {
-      ...defaultStyles,
-      color: "#8D00FF",
-      backgroundColor: "#EED9FF",
-      opacity: 1,
-    },
-    hover: {
-      ...defaultStyles,
-      color: "#8D00FF",
-      backgroundColor: "#EED9FF",
-      opacity: 0.7,
-    },
-  },
-};
-
 export const EasyButton: React.FC<ButtonProps> = ({
   easyRef,
   theme,
@@ -147,9 +54,9 @@ export const EasyButton: React.FC<ButtonProps> = ({
   style,
   extendStyle,
   hoverStyle,
-  hoverExtendStyle,
-  onClick,
-  onFocus,
+  extendHoverStyle,
+  onClick = () => {},
+  onFocus = () => {},
   onHover,
 }) => {
   const [debounceDelay, setDebounceDelay] = useState(debounceTimeout);
@@ -184,7 +91,7 @@ export const EasyButton: React.FC<ButtonProps> = ({
     styles: React.CSSProperties | undefined,
     extendStyles: React.CSSProperties | undefined,
     hoverStyles: React.CSSProperties | undefined,
-    hoverExtendStyles: React.CSSProperties | undefined,
+    extendHoverStyles: React.CSSProperties | undefined,
     isHovered: boolean,
   ): React.CSSProperties | undefined => {
     if (theme === "custom") {
@@ -199,7 +106,7 @@ export const EasyButton: React.FC<ButtonProps> = ({
             ...buttonStyles[theme].normal,
             ...extendStyles,
           } /* @ts-ignore */
-        : { ...buttonStyles[theme].hover, ...hoverExtendStyles };
+        : { ...buttonStyles[theme].hover, ...extendHoverStyles };
     }
 
     /* @ts-ignore */
@@ -215,17 +122,17 @@ export const EasyButton: React.FC<ButtonProps> = ({
         style,
         extendStyle,
         hoverStyle,
-        hoverExtendStyle,
+        extendHoverStyle,
         isHover,
       )}
       onClick={() =>
         debounce(function () {
-          onClick ? onClick() : () => {};
+          onClick();
         })
       }
       onFocus={() =>
         debounce(function () {
-          onFocus ? onFocus() : () => {};
+          onFocus();
         })
       }
       onMouseEnter={() => setIsHover(true)}
