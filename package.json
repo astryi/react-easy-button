@@ -18,7 +18,8 @@
     "url": "https://github.com/astryi/react-easy-button/issues"
   },
   "scripts": {
-    "rollup": "rm -rf dist && rollup -c --bundleConfigAsCjs"
+    "rollup": "rm -rf dist && rollup -c --bundleConfigAsCjs",
+    "publish": "npm run rollup && npm publish"
   },
   "keywords": [
     "react-button",
