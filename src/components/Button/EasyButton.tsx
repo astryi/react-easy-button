@@ -1,6 +1,6 @@
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { buttonStyles, defaultStyles } from "./themes";
+import { buttonStyles } from "./themes";
 export interface ButtonProps {
   label: string;
   title?: string;
