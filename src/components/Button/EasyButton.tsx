@@ -90,7 +90,7 @@ const buttonStyles = {
       ...defaultStyles,
       color: "#006AFE",
       backgroundColor: "#D9E9FF",
-      opacity: 1,
+      opacity: 0.7,
     },
   },
   easy_warn: {
