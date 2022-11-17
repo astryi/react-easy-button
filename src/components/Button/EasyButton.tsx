@@ -119,6 +119,7 @@ export const EasyButton: React.FC<ButtonProps> = ({
             ...(resetDefaultStyles
               ? {}
               : {
+                  ...styles,
                   /* @ts-ignore */
                   ...buttonStyles[theme].normal,
 
