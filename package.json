@@ -1,6 +1,6 @@
 {
   "name": "react-easy-button",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Implement easily customize out of the box. Work with a vast number of pre-maid react button themes",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -18,7 +18,8 @@
     "url": "https://github.com/astryi/react-easy-button/issues"
   },
   "scripts": {
-    "rollup": "rm -rf dist && rollup -c --bundleConfigAsCjs"
+    "rollup": "rm -rf dist && rollup -c --bundleConfigAsCjs",
+    "publish": "npm run rollup && npm publish"
   },
   "keywords": [
     "react-button",

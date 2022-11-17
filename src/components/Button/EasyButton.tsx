@@ -1,17 +1,25 @@
-import React, { CSSProperties, useEffect, useState } from "react";
+import React, {
+  CSSProperties,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { buttonStyles } from "./themes";
 export interface ButtonProps {
-  label: string;
+  label?: string;
   title?: string;
   theme?: ButtonTheme;
   debounceTimeout?: number;
   disabled?: boolean;
   easyRef?: any;
   style?: CSSProperties;
-  extendStyle?: CSSProperties;
   hoverStyle?: CSSProperties;
-  extendHoverStyle?: CSSProperties;
+  resetDefaultStyles?: boolean;
+  children?: ReactNode;
+  isLoading?: boolean;
+  loadingElement?: ReactElement;
   onClick?: () => void;
   onHover?: () => void;
   onFocus?: () => void;
@@ -52,9 +60,11 @@ export const EasyButton: React.FC<ButtonProps> = ({
   debounceTimeout = 0,
   disabled = false,
   style,
-  extendStyle,
   hoverStyle,
-  extendHoverStyle,
+  resetDefaultStyles = false,
+  children,
+  isLoading = false,
+  loadingElement,
   onClick = () => {},
   onFocus = () => {},
   onHover,
@@ -89,28 +99,46 @@ export const EasyButton: React.FC<ButtonProps> = ({
   const getButtonStyles = (
     theme: ButtonTheme | undefined = "custom",
     styles: React.CSSProperties | undefined,
-    extendStyles: React.CSSProperties | undefined,
     hoverStyles: React.CSSProperties | undefined,
-    extendHoverStyles: React.CSSProperties | undefined,
+    resetDefaultStyles: boolean = false,
     isHovered: boolean,
   ): React.CSSProperties | undefined => {
     if (theme === "custom") {
       return !isHovered ? styles : hoverStyles;
     }
 
-    if (extendStyles) {
+    if (styles || hoverStyles) {
       /* @ts-ignore */
       return !isHovered
         ? {
             /* @ts-ignore */
-            ...buttonStyles[theme].normal,
-            ...extendStyles,
+            ...(resetDefaultStyles ? {} : buttonStyles[theme].normal),
+            ...styles,
           } /* @ts-ignore */
-        : { ...buttonStyles[theme].hover, ...extendHoverStyles };
+        : {
+            ...(resetDefaultStyles
+              ? {}
+              : {
+                  /* @ts-ignore */
+                  ...buttonStyles[theme].normal,
+
+                  /* @ts-ignore */
+                  ...buttonStyles[theme].hover,
+                }),
+            ...hoverStyles,
+          };
     }
 
     /* @ts-ignore */
-    return !isHovered ? buttonStyles[theme].normal : buttonStyles[theme].hover;
+    return !isHovered
+      ? resetDefaultStyles
+        ? {}
+        : /* @ts-ignore */
+          buttonStyles[theme].normal
+      : resetDefaultStyles
+      ? {}
+      : /* @ts-ignore */
+        buttonStyles[theme].hover;
   };
 
   return (
@@ -120,9 +148,8 @@ export const EasyButton: React.FC<ButtonProps> = ({
       style={getButtonStyles(
         theme,
         style,
-        extendStyle,
         hoverStyle,
-        extendHoverStyle,
+        resetDefaultStyles,
         isHover,
       )}
       onClick={() =>
@@ -139,7 +166,7 @@ export const EasyButton: React.FC<ButtonProps> = ({
       onMouseLeave={() => setIsHover(false)}
       disabled={disabled}
     >
-      {label && label}
+      {children ? children : label ? label : false}
     </button>
   );
 };
