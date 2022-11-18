@@ -1,12 +1,13 @@
 import React, {
   CSSProperties,
-  ReactElement,
   ReactNode,
+  useContext,
   useEffect,
   useState,
 } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { buttonStyles } from "./themes";
+import { buttonStyles } from "../../themes";
+import EasyButtonContext from "../../contexts/Button/EasyButtonContext";
 export interface ButtonProps {
   label?: string;
   title?: string;
@@ -18,8 +19,7 @@ export interface ButtonProps {
   hoverStyle?: CSSProperties;
   resetDefaultStyles?: boolean;
   children?: ReactNode;
-  isLoading?: boolean;
-  loadingElement?: ReactElement;
+  loading?: { isLoading: boolean; loader: ReactNode };
   onClick?: () => void;
   onHover?: () => void;
   onFocus?: () => void;
@@ -29,28 +29,29 @@ export interface ButtonProps {
  * Button themes
  */
 export type ButtonTheme =
+  | string
   | "custom"
   | "easy_success"
   | "easy_info"
   | "easy_warn"
   | "easy_error"
   | "easy_purple"
-  | "primary_success"
-  | "primary_info"
-  | "primary_warn"
-  | "primary_error"
-  | "secondary_success"
-  | "secondary_info"
-  | "secondary_warn"
-  | "secondary_error"
-  | "primary_success_outline"
-  | "primary_info_outline"
-  | "primary_warn_outline"
-  | "primary_error_outline"
-  | "secondary_success_outline"
-  | "secondary_info_outline"
-  | "secondary_warn_outline"
-  | "secondary_error_outline";
+  // | "primary_success"
+  // | "primary_info"
+  // | "primary_warn"
+  // | "primary_error"
+  // | "secondary_success"
+  // | "secondary_info"
+  // | "secondary_warn"
+  // | "secondary_error"
+  // | "primary_success_outline"
+  // | "primary_info_outline"
+  // | "primary_warn_outline"
+  // | "primary_error_outline"
+  // | "secondary_success_outline"
+  // | "secondary_info_outline"
+  // | "secondary_warn_outline"
+  // | "secondary_error_outline";
 
 export const EasyButton: React.FC<ButtonProps> = ({
   easyRef,
@@ -63,14 +64,15 @@ export const EasyButton: React.FC<ButtonProps> = ({
   hoverStyle,
   resetDefaultStyles = false,
   children,
-  isLoading = false,
-  loadingElement,
+  loading = { isLoading: false, loader: <>Loading...</> },
   onClick = () => {},
   onFocus = () => {},
   onHover,
 }) => {
   const [debounceDelay, setDebounceDelay] = useState(debounceTimeout);
   const [isHover, setIsHover] = useState<boolean>(false);
+
+  const { themes } = useContext(EasyButtonContext);
 
   /**
    * Handle hover state
@@ -107,12 +109,16 @@ export const EasyButton: React.FC<ButtonProps> = ({
       return !isHovered ? styles : hoverStyles;
     }
 
+    const easyButtonThemes = { ...buttonStyles, ...themes };
+
+    console.log("themes", easyButtonThemes);
+
     if (styles || hoverStyles) {
       /* @ts-ignore */
       return !isHovered
         ? {
             /* @ts-ignore */
-            ...(resetDefaultStyles ? {} : buttonStyles[theme].normal),
+            ...(resetDefaultStyles ? {} : easyButtonThemes[theme].normal),
             ...styles,
           } /* @ts-ignore */
         : {
@@ -120,10 +126,10 @@ export const EasyButton: React.FC<ButtonProps> = ({
               ? {}
               : {
                   /* @ts-ignore */
-                  ...buttonStyles[theme].normal,
+                  ...easyButtonThemes[theme].normal,
                   ...styles,
                   /* @ts-ignore */
-                  ...buttonStyles[theme].hover,
+                  ...easyButtonThemes[theme].hover,
                 }),
             ...hoverStyles,
           };
@@ -134,16 +140,17 @@ export const EasyButton: React.FC<ButtonProps> = ({
       ? resetDefaultStyles
         ? {}
         : /* @ts-ignore */
-          buttonStyles[theme].normal
+          easyButtonThemes[theme].normal
       : resetDefaultStyles
       ? {}
       : /* @ts-ignore */
-        buttonStyles[theme].hover;
+        easyButtonThemes[theme].hover;
   };
 
   return (
     <button
       ref={easyRef}
+      className={`react-easy-button react-easy-button-${theme} ${theme}`}
       title={title && title}
       style={getButtonStyles(
         theme,
@@ -166,7 +173,13 @@ export const EasyButton: React.FC<ButtonProps> = ({
       onMouseLeave={() => setIsHover(false)}
       disabled={disabled}
     >
-      {children ? children : label ? label : false}
+      {!loading.isLoading
+        ? children
+          ? children
+          : label
+          ? label
+          : false
+        : loading.loader}
     </button>
   );
 };

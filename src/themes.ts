@@ -1,5 +1,13 @@
 import React from "react";
 
+interface ButtonStyles {
+  [theme: string]: {
+    normal: React.CSSProperties,
+    hover?: React.CSSProperties,
+    disable?: React.CSSProperties,
+  }
+}
+
 /**
  * Button default styles
  */
@@ -8,11 +16,12 @@ export const defaultStyles: React.CSSProperties = {
   paddingBottom: 10,
   paddingLeft: 20,
   paddingRight: 20,
-  fontSize: 15,
+  fontSize: 16,
   fontWeight: "500",
   color: "#000",
   backgroundColor: "#fcfcfc",
-  border: 0,
+  borderWidth: 0,
+  borderColor: "transparent",
   borderRadius: 5,
   boxShadow: "0px 2px 4px rgba(193, 193, 193, 0.25)",
 };
@@ -20,7 +29,7 @@ export const defaultStyles: React.CSSProperties = {
 /**
  * Button styles obj contains normal, hover & other values
  */
-export const buttonStyles = {
+export const buttonStyles: ButtonStyles = {
   easy_success: {
     normal: {
       ...defaultStyles,
@@ -64,12 +73,12 @@ export const buttonStyles = {
     normal: {
       ...defaultStyles,
       color: "#FF0000",
-      backgroundColor: "FFD9D9",
+      backgroundColor: "#FFD9D9",
       opacity: 1,
     },
     hover: {
       color: "#FF0000",
-      backgroundColor: "#A48000",
+      backgroundColor: "#FFD9D9",
       opacity: 0.7,
     },
   },
