@@ -9,21 +9,27 @@ import { useDebouncedCallback } from "use-debounce";
 import { buttonStyles } from "../../themes";
 import EasyButtonContext from "../../contexts/Button/EasyButtonContext";
 export interface ButtonProps {
+  easyRef?: any;
+  style?: CSSProperties;
   label?: string;
   title?: string;
   theme?: ButtonTheme;
-  debounceTimeout?: number;
   disabled?: boolean;
-  easyRef?: any;
-  style?: CSSProperties;
+  debounceTimeout?: number;
   hoverStyle?: CSSProperties;
   resetDefaultStyles?: boolean;
   children?: ReactNode;
+  size: ButtonSize;
+  // variant: ButtonVariant;
+  // rounded: "easy" | "squared" | "full" | "custom";
   loading?: { isLoading: boolean; loader: ReactNode };
   onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onHover?: () => void;
   onFocus?: (e: React.FocusEvent<HTMLButtonElement, Element>) => void;
 }
+
+type ButtonSize = "easy" | "sm" | "lg" | "custom";
+type ButtonVariant = "easy" | "outlined" | "solid";
 
 /**
  * Button themes
@@ -31,27 +37,13 @@ export interface ButtonProps {
 export type ButtonTheme =
   | string
   | "custom"
+  | "easy"
   | "easy_success"
   | "easy_info"
   | "easy_warn"
   | "easy_error"
+  | "easy_dark"
   | "easy_purple";
-// | "primary_success"
-// | "primary_info"
-// | "primary_warn"
-// | "primary_error"
-// | "secondary_success"
-// | "secondary_info"
-// | "secondary_warn"
-// | "secondary_error"
-// | "primary_success_outline"
-// | "primary_info_outline"
-// | "primary_warn_outline"
-// | "primary_error_outline"
-// | "secondary_success_outline"
-// | "secondary_info_outline"
-// | "secondary_warn_outline"
-// | "secondary_error_outline";
 
 export const EasyButton: React.FC<ButtonProps> = ({
   easyRef,
@@ -64,6 +56,9 @@ export const EasyButton: React.FC<ButtonProps> = ({
   hoverStyle,
   resetDefaultStyles = false,
   children,
+  size = "easy",
+  rounded = "easy",
+  variant = "easy",
   loading = { isLoading: false, loader: <>Loading...</> },
   onClick = () => {},
   onFocus = () => {},
@@ -95,29 +90,88 @@ export const EasyButton: React.FC<ButtonProps> = ({
   }, debounceDelay);
 
   /**
+   * Get button size
+   */
+  const getButtonSize = ({
+    size,
+  }: {
+    size: ButtonSize;
+  }): React.CSSProperties => {
+    switch (size) {
+      case "easy":
+        return {
+          fontFamily: "Inter",
+          fontStyle: "normal",
+          fontWeight: 500,
+          fontSize: 16,
+          lineHeight: "20px",
+          paddingTop: 12,
+          paddingBottom: 12,
+          paddingLeft: 20,
+          paddingRight: 20,
+        };
+      case "sm":
+        return {
+          fontFamily: "Inter",
+          fontStyle: "normal",
+          fontWeight: 500,
+          fontSize: 15,
+          lineHeight: "18px",
+          paddingTop: 10,
+          paddingBottom: 10,
+          paddingLeft: 20,
+          paddingRight: 20,
+        };
+      case "lg":
+        return {
+          fontFamily: "Inter",
+          fontStyle: "normal",
+          fontWeight: 500,
+          fontSize: 20,
+          lineHeight: "24px",
+          paddingTop: 12,
+          paddingBottom: 12,
+          paddingLeft: 20,
+          paddingRight: 20,
+        };
+      default:
+        return {};
+    }
+  };
+
+  /**
    * Handle button styles
    * Return all styles based on condition
    */
-  const getButtonStyles = (
-    theme: ButtonTheme | undefined = "custom",
-    styles: React.CSSProperties | undefined,
-    hoverStyles: React.CSSProperties | undefined,
-    resetDefaultStyles: boolean = false,
-    isHovered: boolean,
-  ): React.CSSProperties | undefined => {
+  const getButtonStyles = ({
+    theme = "custom",
+    style,
+    hoverStyle,
+    resetDefaultStyles = false,
+    isHovered,
+    size = "easy",
+  }: {
+    theme: ButtonTheme | undefined;
+    style: React.CSSProperties | undefined;
+    hoverStyle: React.CSSProperties | undefined;
+    resetDefaultStyles: boolean;
+    isHovered: boolean;
+    size: ButtonSize;
+  }): React.CSSProperties | undefined => {
     if (theme === "custom") {
-      return !isHovered ? styles : { ...styles, ...hoverStyles };
+      return !isHovered ? style : { ...style, ...hoverStyle };
     }
 
     const easyButtonThemes = { ...buttonStyles, ...themes };
 
-    if (styles || hoverStyles) {
+    if (style || hoverStyle) {
       /* @ts-ignore */
       return !isHovered
         ? {
             /* @ts-ignore */
             ...(resetDefaultStyles ? {} : easyButtonThemes[theme].normal),
-            ...styles,
+            ...getButtonSize({ size }),
+            ...style,
           } /* @ts-ignore */
         : {
             ...(resetDefaultStyles
@@ -126,10 +180,12 @@ export const EasyButton: React.FC<ButtonProps> = ({
                   /* @ts-ignore */
                   ...easyButtonThemes[theme].normal,
                   ...easyButtonThemes[theme].hover,
-                  ...styles,
+
+                  ...getButtonSize({ size }),
+                  ...style,
                   /* @ts-ignore */
                 }),
-            ...hoverStyles,
+            ...hoverStyle,
           };
     }
 
@@ -141,11 +197,19 @@ export const EasyButton: React.FC<ButtonProps> = ({
       ? resetDefaultStyles
         ? {}
         : /* @ts-ignore */
-          easyButtonThemes[theme].normal
+          {
+            ...easyButtonThemes[theme].normal,
+
+            ...getButtonSize({ size }),
+          }
       : resetDefaultStyles
       ? {}
       : /* @ts-ignore */
-        easyButtonThemes[theme].hover;
+        {
+          ...easyButtonThemes[theme].hover,
+
+          ...getButtonSize({ size }),
+        };
   };
 
   return (
@@ -153,13 +217,14 @@ export const EasyButton: React.FC<ButtonProps> = ({
       ref={easyRef}
       className={`react-easy-button react-easy-button-${theme} ${theme}`}
       title={title && title}
-      style={getButtonStyles(
+      style={getButtonStyles({
         theme,
         style,
         hoverStyle,
         resetDefaultStyles,
-        isHover,
-      )}
+        isHovered: isHover,
+        size,
+      })}
       onClick={(e) =>
         debounce(function () {
           onClick(e);
