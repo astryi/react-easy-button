@@ -2,10 +2,10 @@ import React from "react";
 
 interface ButtonStyles {
   [theme: string]: {
-    normal: React.CSSProperties,
-    hover?: React.CSSProperties,
-    disable?: React.CSSProperties,
-  }
+    normal: React.CSSProperties;
+    hover?: React.CSSProperties;
+    disable?: React.CSSProperties;
+  };
 }
 
 /**
@@ -30,6 +30,32 @@ export const defaultStyles: React.CSSProperties = {
  * Button styles obj contains normal, hover & other values
  */
 export const buttonStyles: ButtonStyles = {
+  easy: {
+    normal: {
+      ...defaultStyles,
+      color: "#242424",
+      backgroundColor: "#fff",
+      opacity: 1,
+    },
+    hover: {
+      color: "#04A100",
+      backgroundColor: "#DAFFD9",
+      opacity: 0.7,
+    },
+  },
+  easy_dark: {
+    normal: {
+      ...defaultStyles,
+      color: "#fff",
+      backgroundColor: "#686868",
+      opacity: 1,
+    },
+    hover: {
+      color: "#04A100",
+      backgroundColor: "#DAFFD9",
+      opacity: 0.7,
+    },
+  },
   easy_success: {
     normal: {
       ...defaultStyles,
