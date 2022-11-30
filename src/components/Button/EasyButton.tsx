@@ -20,9 +20,9 @@ export interface ButtonProps {
   resetDefaultStyles?: boolean;
   children?: ReactNode;
   loading?: { isLoading: boolean; loader: ReactNode };
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onHover?: () => void;
-  onFocus?: () => void;
+  onFocus?: (e: React.FocusEvent<HTMLButtonElement, Element>) => void;
 }
 
 /**
@@ -35,23 +35,23 @@ export type ButtonTheme =
   | "easy_info"
   | "easy_warn"
   | "easy_error"
-  | "easy_purple"
-  // | "primary_success"
-  // | "primary_info"
-  // | "primary_warn"
-  // | "primary_error"
-  // | "secondary_success"
-  // | "secondary_info"
-  // | "secondary_warn"
-  // | "secondary_error"
-  // | "primary_success_outline"
-  // | "primary_info_outline"
-  // | "primary_warn_outline"
-  // | "primary_error_outline"
-  // | "secondary_success_outline"
-  // | "secondary_info_outline"
-  // | "secondary_warn_outline"
-  // | "secondary_error_outline";
+  | "easy_purple";
+// | "primary_success"
+// | "primary_info"
+// | "primary_warn"
+// | "primary_error"
+// | "secondary_success"
+// | "secondary_info"
+// | "secondary_warn"
+// | "secondary_error"
+// | "primary_success_outline"
+// | "primary_info_outline"
+// | "primary_warn_outline"
+// | "primary_error_outline"
+// | "secondary_success_outline"
+// | "secondary_info_outline"
+// | "secondary_warn_outline"
+// | "secondary_error_outline";
 
 export const EasyButton: React.FC<ButtonProps> = ({
   easyRef,
@@ -106,12 +106,10 @@ export const EasyButton: React.FC<ButtonProps> = ({
     isHovered: boolean,
   ): React.CSSProperties | undefined => {
     if (theme === "custom") {
-      return !isHovered ? styles : hoverStyles;
+      return !isHovered ? styles : { ...styles, ...hoverStyles };
     }
 
     const easyButtonThemes = { ...buttonStyles, ...themes };
-
-    console.log("themes", easyButtonThemes);
 
     if (styles || hoverStyles) {
       /* @ts-ignore */
@@ -127,14 +125,17 @@ export const EasyButton: React.FC<ButtonProps> = ({
               : {
                   /* @ts-ignore */
                   ...easyButtonThemes[theme].normal,
+                  ...easyButtonThemes[theme].hover,
                   ...styles,
                   /* @ts-ignore */
-                  ...easyButtonThemes[theme].hover,
                 }),
             ...hoverStyles,
           };
     }
 
+    /**
+     * If style & hover style pops is not provided
+     */
     /* @ts-ignore */
     return !isHovered
       ? resetDefaultStyles
@@ -159,14 +160,14 @@ export const EasyButton: React.FC<ButtonProps> = ({
         resetDefaultStyles,
         isHover,
       )}
-      onClick={() =>
+      onClick={(e) =>
         debounce(function () {
-          onClick();
+          onClick(e);
         })
       }
-      onFocus={() =>
+      onFocus={(e) =>
         debounce(function () {
-          onFocus();
+          onFocus(e);
         })
       }
       onMouseEnter={() => setIsHover(true)}
